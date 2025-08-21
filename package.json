@@ -23,7 +23,7 @@
     "express": "^4.18.2",
     "cors": "^2.8.5",
     "helmet": "^7.1.0",
-    "rate-limiter-flexible": "^3.0.8",
+    "rate-limiter-flexible": "^3.0.0",
     "jsonwebtoken": "^9.0.2",
     "bcryptjs": "^2.4.3",
     "sqlite3": "^5.1.6",
@@ -36,4 +36,5 @@
   "engines": {
     "node": ">=18.0.0"
   }
+
 } 
