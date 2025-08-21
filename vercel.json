@@ -1,0 +1,28 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/trading",
+      "dest": "/api/trading"
+    },
+    {
+      "src": "/analytics/(.*)",
+      "dest": "/api/analytics/$1"
+    }
+  ],
+  "env": {
+    "JWT_SECRET": "@jwt-secret",
+    "DATABASE_URL": "@database-url",
+    "ADMIN_TOKEN": "@admin-token"
+  }
+} 

@@ -1,0 +1,39 @@
+{
+  "name": "snipex-pro-server",
+  "version": "1.0.0",
+  "description": "Serveur complet pour le bookmarklet Snipex Pro - Exfiltration de données",
+  "main": "api/index.js",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "vercel build",
+    "deploy": "vercel --prod",
+    "start": "node api/index.js"
+  },
+  "keywords": [
+    "vercel",
+    "serverless",
+    "exfiltration",
+    "trading",
+    "crypto",
+    "bookmarklet"
+  ],
+  "author": "Votre Nom",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "rate-limiter-flexible": "^3.0.8",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "sqlite3": "^5.1.6",
+    "uuid": "^9.0.1",
+    "crypto": "^1.0.1"
+  },
+  "devDependencies": {
+    "vercel": "^32.5.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+} 
